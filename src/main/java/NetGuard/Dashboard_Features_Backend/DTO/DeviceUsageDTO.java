@@ -12,5 +12,5 @@ public class DeviceUsageDTO {
     private String deviceMac;
     private Long bytesUsed;
     private Integer connectionMinutes;
-    private Double dataPercentage;
+    private Double percentage;
 }

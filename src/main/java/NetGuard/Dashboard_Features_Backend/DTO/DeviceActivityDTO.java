@@ -3,7 +3,6 @@ package NetGuard.Dashboard_Features_Backend.DTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +15,7 @@ public class DeviceActivityDTO {
     private String currentSite;
     private String currentActivity;
     private Integer signalStrength;
-    private Long dataUsageBytes;
+    private Long dataUsage;
     private LocalDateTime lastSeen;
     private Boolean isActive;
     private String deviceType;

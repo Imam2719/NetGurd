@@ -3,7 +3,6 @@ package NetGuard.Dashboard_Features_Backend.DTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,6 +17,6 @@ public class NetworkUsageStatsDTO {
     private Double averageSignalStrength;
     private List<HourlyUsageDTO> hourlyBreakdown;
     private List<DeviceUsageDTO> deviceBreakdown;
-    private String period;
+    private String timeRange;
     private LocalDateTime lastUpdated;
 }

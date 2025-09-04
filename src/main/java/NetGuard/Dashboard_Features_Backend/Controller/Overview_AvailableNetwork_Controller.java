@@ -50,29 +50,32 @@ public class Overview_AvailableNetwork_Controller {
     private final Overview_AvailableNetwork_service networkService;
 
     /**
-     * Get complete network overview data including current connection status
+     * 🔥 ENHANCED: Get complete network overview data with comprehensive device discovery
      */
     @GetMapping("/overview")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getNetworkOverview() {
         try {
-            log.info("Fetching real-time network overview data");
+            log.info("📊 Fetching comprehensive network overview with device discovery");
 
             NetworkOverviewDTO overview = networkService.getNetworkOverview();
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Network overview data retrieved successfully");
+            response.put("message", "Network overview with device discovery completed successfully");
             response.put("data", overview);
             response.put("timestamp", System.currentTimeMillis());
 
-            log.info("Network overview retrieved: {} networks found, currently connected to: {}",
-                    overview.getAvailableNetworks().size(), overview.getConnectedWifi());
+            // Enhanced logging
+            log.info("✅ Network overview retrieved: {} networks found, {} devices connected, currently connected to: {}",
+                    overview.getAvailableNetworks().size(),
+                    overview.getConnectedDevices().size(),
+                    overview.getConnectedWifi());
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error fetching network overview: ", e);
+            log.error("❌ Error fetching network overview: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -85,34 +88,33 @@ public class Overview_AvailableNetwork_Controller {
     }
 
     /**
-     * Perform real-time WiFi network scan to discover all available networks
+     * 🔥 ENHANCED: Perform real-time WiFi network scan with better error handling
      */
     @PostMapping("/scan")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> performWiFiScan() {
         try {
-            log.info("Starting real-time WiFi network scan");
+            log.info("🔍 Starting enhanced real-time WiFi network scan");
 
             CompletableFuture<List<AvailableNetworkDTO>> scanFuture = networkService.scanAvailableNetworks();
 
-            // Wait for scan to complete (with timeout)
-            List<AvailableNetworkDTO> networks = scanFuture.get(java.util.concurrent.TimeUnit.SECONDS.toSeconds(15),
-                    java.util.concurrent.TimeUnit.SECONDS);
+            // Wait for scan to complete with extended timeout for comprehensive scanning
+            List<AvailableNetworkDTO> networks = scanFuture.get(20, java.util.concurrent.TimeUnit.SECONDS);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "WiFi scan completed successfully");
+            response.put("message", "Enhanced WiFi scan completed successfully");
             response.put("data", networks);
             response.put("count", networks.size());
             response.put("timestamp", System.currentTimeMillis());
-            response.put("scanDuration", "Real-time scan");
+            response.put("scanDuration", "Real-time comprehensive scan");
 
-            log.info("WiFi scan completed: {} networks discovered", networks.size());
+            log.info("✅ Enhanced WiFi scan completed: {} networks discovered", networks.size());
 
             return ResponseEntity.ok(response);
 
         } catch (java.util.concurrent.TimeoutException e) {
-            log.warn("WiFi scan timed out after 15 seconds");
+            log.warn("⏰ WiFi scan timed out after 20 seconds");
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -123,7 +125,7 @@ public class Overview_AvailableNetwork_Controller {
             return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(errorResponse);
 
         } catch (Exception e) {
-            log.error("Error during WiFi scan: ", e);
+            log.error("❌ Error during WiFi scan: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -136,16 +138,16 @@ public class Overview_AvailableNetwork_Controller {
     }
 
     /**
-     * Connect to a specific WiFi network with credentials
+     * 🔥 ENHANCED: Connect to a specific WiFi network with comprehensive device discovery
      */
     @PostMapping("/connect")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> connectToWiFiNetwork(@Valid @RequestBody NetworkConnectionRequestDTO request) {
         try {
-            log.info("Attempting to connect to WiFi network: {} (secured: {})",
+            log.info("🔗 Attempting enhanced WiFi connection to: {} (secured: {})",
                     request.getSsid(), request.getPassword() != null && !request.getPassword().isEmpty());
 
-            // Validate input
+            // Enhanced input validation
             if (request.getSsid() == null || request.getSsid().trim().isEmpty()) {
                 Map<String, Object> errorResponse = new HashMap<>();
                 errorResponse.put("success", false);
@@ -159,6 +161,7 @@ public class Overview_AvailableNetwork_Controller {
                 request.setDeviceName("NetGuard Device");
             }
 
+            // Attempt connection with enhanced device discovery
             NetworkConnectionResponseDTO connectionResult = networkService.connectToNetwork(request);
 
             Map<String, Object> response = new HashMap<>();
@@ -167,26 +170,26 @@ public class Overview_AvailableNetwork_Controller {
             response.put("timestamp", System.currentTimeMillis());
 
             if (connectionResult.getSuccess()) {
-                log.info("Successfully connected to WiFi network: {}", request.getSsid());
+                log.info("✅ Successfully connected to WiFi network: {}", request.getSsid());
 
-                // 🔥 NEW: Scan for all devices after successful connection
-                try {
-                    networkService.scanAllConnectedDevices();
-                    response.put("message", "Successfully connected to " + request.getSsid() + " and scanning for all devices on network...");
-                    log.info("Initiated device discovery scan for network: {}", request.getSsid());
-                } catch (Exception scanError) {
-                    log.warn("Connected successfully but device scan failed: {}", scanError.getMessage());
-                    response.put("message", "Successfully connected to " + request.getSsid() + " (device scan failed)");
-                }
-
+                response.put("message", "Successfully connected to " + request.getSsid() + " and performed device discovery");
                 response.put("connectionDetails", Map.of(
                         "ssid", request.getSsid(),
                         "assignedIp", connectionResult.getAssignedIp(),
                         "signalStrength", connectionResult.getSignalStrength(),
-                        "connectedAt", connectionResult.getConnectedAt()
+                        "connectedAt", connectionResult.getConnectedAt(),
+                        "deviceDiscovery", "Enhanced device discovery completed"
                 ));
+
+                // 🔥 NEW: Provide immediate feedback about device discovery
+                response.put("nextSteps", Map.of(
+                        "action", "Device discovery in progress",
+                        "recommendation", "Check the Devices tab to see all discovered network devices",
+                        "refreshInterval", "Data refreshes automatically every 30 seconds"
+                ));
+
             } else {
-                log.warn("Failed to connect to WiFi network: {} - {}", request.getSsid(), connectionResult.getMessage());
+                log.warn("❌ Failed to connect to WiFi network: {} - {}", request.getSsid(), connectionResult.getMessage());
                 response.put("message", connectionResult.getMessage());
             }
 
@@ -194,7 +197,7 @@ public class Overview_AvailableNetwork_Controller {
             return ResponseEntity.status(status).body(response);
 
         } catch (Exception e) {
-            log.error("Error connecting to WiFi network: ", e);
+            log.error("❌ Error connecting to WiFi network: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -205,14 +208,64 @@ public class Overview_AvailableNetwork_Controller {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
     /**
-     * Disconnect from current WiFi network
+     * 🔥 NEW: Trigger immediate device discovery for current network
+     */
+    @PostMapping("/discover-devices")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> triggerDeviceDiscovery() {
+        try {
+            log.info("🔍 Manual device discovery triggered");
+
+            // Get current network
+            NetworkOverviewDTO overview = networkService.getNetworkOverview();
+            String connectedNetwork = overview.getConnectedWifi();
+
+            if ("Not Connected".equals(connectedNetwork)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Not connected to any network. Please connect to a WiFi network first.");
+                errorResponse.put("timestamp", System.currentTimeMillis());
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Trigger immediate device discovery
+            networkService.performImmediateDeviceDiscovery(connectedNetwork);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Device discovery completed successfully for network: " + connectedNetwork);
+            response.put("networkName", connectedNetwork);
+            response.put("discoveryType", "Comprehensive device scan");
+            response.put("timestamp", System.currentTimeMillis());
+            response.put("recommendation", "Check the network overview or devices tab to see discovered devices");
+
+            log.info("✅ Manual device discovery completed for network: {}", connectedNetwork);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("❌ Error triggering device discovery: ", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Device discovery failed: " + e.getMessage());
+            errorResponse.put("error", e.getClass().getSimpleName());
+            errorResponse.put("timestamp", System.currentTimeMillis());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * 🔥 ENHANCED: Disconnect from current WiFi network with cleanup
      */
     @PostMapping("/disconnect")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> disconnectFromWiFi(@RequestParam(required = false) String deviceMac) {
         try {
-            log.info("Attempting to disconnect from current WiFi network");
+            log.info("🔌 Attempting to disconnect from current WiFi network");
 
             // Use a default device MAC if not provided
             if (deviceMac == null || deviceMac.trim().isEmpty()) {
@@ -228,16 +281,18 @@ public class Overview_AvailableNetwork_Controller {
             response.put("timestamp", System.currentTimeMillis());
 
             if (disconnectionResult.getSuccess()) {
-                log.info("Successfully disconnected from WiFi network");
+                log.info("✅ Successfully disconnected from WiFi network");
+                response.put("status", "Disconnected successfully");
+                response.put("nextSteps", "All device connections have been cleared from the database");
             } else {
-                log.warn("Failed to disconnect from WiFi network: {}", disconnectionResult.getMessage());
+                log.warn("❌ Failed to disconnect from WiFi network: {}", disconnectionResult.getMessage());
             }
 
             HttpStatus status = disconnectionResult.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
             return ResponseEntity.status(status).body(response);
 
         } catch (Exception e) {
-            log.error("Error disconnecting from WiFi network: ", e);
+            log.error("❌ Error disconnecting from WiFi network: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -256,7 +311,7 @@ public class Overview_AvailableNetwork_Controller {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getAvailableNetworks() {
         try {
-            log.info("Fetching cached available networks");
+            log.info("📋 Fetching cached available networks");
 
             // This returns cached scan results instead of performing new scan
             NetworkOverviewDTO overview = networkService.getNetworkOverview();
@@ -273,7 +328,7 @@ public class Overview_AvailableNetwork_Controller {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error fetching available networks: ", e);
+            log.error("❌ Error fetching available networks: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -286,31 +341,39 @@ public class Overview_AvailableNetwork_Controller {
     }
 
     /**
-     * Refresh network data manually (force scan + overview update)
+     * 🔥 ENHANCED: Refresh network data manually with comprehensive discovery
      */
     @PostMapping("/refresh")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> refreshNetworkData() {
         try {
-            log.info("Manual network data refresh requested");
+            log.info("🔄 Manual network data refresh with device discovery requested");
 
             // Trigger async network scan
             CompletableFuture<List<AvailableNetworkDTO>> scanFuture = networkService.scanAvailableNetworks();
 
-            // Wait briefly for scan to start, then return
-            Thread.sleep(1000);
+            // Get current network for device discovery
+            NetworkOverviewDTO overview = networkService.getNetworkOverview();
+            String connectedNetwork = overview.getConnectedWifi();
+
+            // If connected, also trigger device discovery
+            if (!"Not Connected".equals(connectedNetwork)) {
+                networkService.performImmediateDeviceDiscovery(connectedNetwork);
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Network refresh initiated successfully");
+            response.put("message", "Network refresh and device discovery initiated successfully");
             response.put("status", "scanning");
+            response.put("connectedNetwork", connectedNetwork);
+            response.put("deviceDiscovery", !"Not Connected".equals(connectedNetwork) ? "Completed" : "Skipped (not connected)");
             response.put("timestamp", System.currentTimeMillis());
             response.put("note", "Scan is running in background. Use /overview to get updated results.");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error refreshing network data: ", e);
+            log.error("❌ Error refreshing network data: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -323,13 +386,13 @@ public class Overview_AvailableNetwork_Controller {
     }
 
     /**
-     * Get current connection status
+     * 🔥 ENHANCED: Get current connection status with device count
      */
     @GetMapping("/status")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getCurrentConnectionStatus() {
         try {
-            log.info("Fetching current WiFi connection status");
+            log.info("📊 Fetching current WiFi connection status with device information");
 
             NetworkOverviewDTO overview = networkService.getNetworkOverview();
 
@@ -339,6 +402,7 @@ public class Overview_AvailableNetwork_Controller {
             connectionStatus.put("activeDevices", overview.getActiveDevices());
             connectionStatus.put("totalDevices", overview.getTotalDevices());
             connectionStatus.put("vpnActive", overview.getVpnActive());
+            connectionStatus.put("discoveredDevices", overview.getConnectedDevices().size());
 
             // Get signal strength of connected network
             if (!overview.getConnectedWifi().equals("Not Connected")) {
@@ -352,16 +416,30 @@ public class Overview_AvailableNetwork_Controller {
                         });
             }
 
+            // Add device summary
+            if (!overview.getConnectedDevices().isEmpty()) {
+                connectionStatus.put("deviceSummary", Map.of(
+                        "totalConnected", overview.getConnectedDevices().size(),
+                        "recentlyConnected", overview.getConnectedDevices().stream()
+                                .mapToLong(device -> device.getDataUsage() != null ? device.getDataUsage() : 0)
+                                .sum(),
+                        "lastDeviceConnected", overview.getConnectedDevices().stream()
+                                .map(device -> device.getDeviceName())
+                                .findFirst()
+                                .orElse("Unknown")
+                ));
+            }
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Connection status retrieved successfully");
+            response.put("message", "Connection status with device information retrieved successfully");
             response.put("data", connectionStatus);
             response.put("timestamp", System.currentTimeMillis());
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error fetching connection status: ", e);
+            log.error("❌ Error fetching connection status: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -386,15 +464,23 @@ public class Overview_AvailableNetwork_Controller {
                     os.toLowerCase().contains("linux");
 
             Map<String, Object> healthData = new HashMap<>();
-            healthData.put("service", "WiFi Network Scanner");
+            healthData.put("service", "Enhanced WiFi Network Scanner");
             healthData.put("status", "healthy");
             healthData.put("operatingSystem", os);
             healthData.put("wifiScanSupported", wifiSupported);
-            healthData.put("version", "2.0.0 - Real WiFi Scanner");
+            healthData.put("deviceDiscoverySupported", true);
+            healthData.put("version", "3.0.0 - Enhanced Real WiFi Scanner with Device Discovery");
+            healthData.put("features", List.of(
+                    "Real WiFi scanning",
+                    "Comprehensive device discovery",
+                    "Enhanced device naming",
+                    "Automatic device monitoring",
+                    "Cross-platform support"
+            ));
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "WiFi network service is healthy");
+            response.put("message", "Enhanced WiFi network service is healthy");
             response.put("data", healthData);
             response.put("timestamp", System.currentTimeMillis());
 
@@ -411,13 +497,13 @@ public class Overview_AvailableNetwork_Controller {
     }
 
     /**
-     * Get detailed network statistics
+     * 🔥 ENHANCED: Get detailed network statistics with device information
      */
     @GetMapping("/stats")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getNetworkStatistics() {
         try {
-            log.info("Fetching detailed network statistics");
+            log.info("📈 Fetching detailed network statistics with device analytics");
 
             NetworkOverviewDTO overview = networkService.getNetworkOverview();
             NetworkStatsDTO stats = overview.getNetworkStats();
@@ -427,8 +513,26 @@ public class Overview_AvailableNetwork_Controller {
             detailedStats.put("availableNetworksCount", overview.getAvailableNetworks().size());
             detailedStats.put("connectedNetworkName", overview.getConnectedWifi());
             detailedStats.put("dailyVisitedSites", overview.getDailyVisitedSites());
+            detailedStats.put("discoveredDevicesCount", overview.getConnectedDevices().size());
 
-            // Additional statistics
+            // Enhanced device analytics
+            if (!overview.getConnectedDevices().isEmpty()) {
+                Map<String, Object> deviceAnalytics = new HashMap<>();
+                deviceAnalytics.put("totalDevices", overview.getConnectedDevices().size());
+                deviceAnalytics.put("totalDataUsage", overview.getConnectedDevices().stream()
+                        .mapToLong(device -> device.getDataUsage() != null ? device.getDataUsage() : 0)
+                        .sum());
+                deviceAnalytics.put("deviceTypes", overview.getConnectedDevices().stream()
+                        .map(device -> device.getDeviceName().contains("Apple") ? "Apple" :
+                                device.getDeviceName().contains("Samsung") ? "Samsung" :
+                                        device.getDeviceName().contains("Router") ? "Network Equipment" : "Other")
+                        .distinct()
+                        .toList());
+
+                detailedStats.put("deviceAnalytics", deviceAnalytics);
+            }
+
+            // Additional network statistics
             if (!overview.getAvailableNetworks().isEmpty()) {
                 double maxSignal = overview.getAvailableNetworks().stream()
                         .mapToInt(AvailableNetworkDTO::getSignal)
@@ -439,18 +543,21 @@ public class Overview_AvailableNetwork_Controller {
 
                 detailedStats.put("strongestSignal", maxSignal);
                 detailedStats.put("weakestSignal", minSignal);
+                detailedStats.put("averageSignal", overview.getAvailableNetworks().stream()
+                        .mapToInt(AvailableNetworkDTO::getSignal)
+                        .average().orElse(0.0));
             }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Network statistics retrieved successfully");
+            response.put("message", "Enhanced network statistics retrieved successfully");
             response.put("data", detailedStats);
             response.put("timestamp", System.currentTimeMillis());
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error fetching network statistics: ", e);
+            log.error("❌ Error fetching network statistics: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
@@ -469,7 +576,7 @@ public class Overview_AvailableNetwork_Controller {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> checkNetworkAvailability(@PathVariable String ssid) {
         try {
-            log.info("Checking availability of network: {}", ssid);
+            log.info("🔍 Checking availability of network: {}", ssid);
 
             NetworkOverviewDTO overview = networkService.getNetworkOverview();
 
@@ -500,7 +607,7 @@ public class Overview_AvailableNetwork_Controller {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error checking network availability: ", e);
+            log.error("❌ Error checking network availability: ", e);
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);

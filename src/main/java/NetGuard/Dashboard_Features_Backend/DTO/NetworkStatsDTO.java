@@ -15,3 +15,4 @@ public class NetworkStatsDTO {
     private Integer securedNetworksCount;
     private Integer openNetworksCount;
 }
+
