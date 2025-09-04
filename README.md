@@ -103,24 +103,6 @@ NetGurd/
 └── README.md
 ```
 
-## 🖼️ Screenshots
-
-### Main Dashboard
-![Dashboard](./assets/dashboard-screenshot.png)
-*Overview of connected devices and network status*
-
-### Device Management
-![Device Management](./assets/device-management-screenshot.png)
-*Individual device controls and settings*
-
-### Analytics Dashboard
-![Analytics](./assets/analytics-screenshot.png)
-*Usage statistics and reports*
-
-### Network Scanner
-![Network Scanner](./assets/network-scanner-screenshot.png)
-*Real-time network device discovery*
-
 ## 🔧 Configuration
 
 ### Network Control Settings
@@ -190,7 +172,14 @@ If you encounter any issues or have questions:
 ## 📞 Contact
 
 For technical support or collaboration inquiries, please reach out through GitHub Issues or contact the development team directly.
+
+
+## Project UI
 ![WhatsApp Image 2025-09-03 at 12 42 43_2845898d](https://github.com/user-attachments/assets/f651e7ea-00fa-46bf-87df-337ba6c4ac4c)
+
+<img width="1920" height="1805" alt="image" src="https://github.com/user-attachments/assets/1b75d6ef-9b34-4de9-8131-2c8051d595fe" />
+
+<img width="1911" height="1012" alt="image" src="https://github.com/user-attachments/assets/b2813f91-06bd-48cb-9985-aae6b631d72e" />
 
 
 ![WhatsApp Image 2025-09-03 at 12 43 31_aba090eb](https://github.com/user-attachments/assets/598dc91a-fbf8-4ddb-8b16-25ff30f5b7c9)
